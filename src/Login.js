@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
 
-export default function Login() {
+export default function Login(props) {
   const [next, setNext] = useState(false);
 
   const currentUser = useContext(UserContext);
@@ -17,7 +17,10 @@ export default function Login() {
       <button
         onClick={() => {
           fetch("/login", { method: "POST" }).then((res) => {
-            if (res.status === 201) setNext(true);
+            if (res.status === 201) {
+              setNext(true);
+              props.setRefresh(true);
+            }
           });
         }}
       >
@@ -25,7 +28,11 @@ export default function Login() {
       </button>
       <button
         onClick={() => {
-          fetch("/logout", { method: "DELETE" });
+          fetch("/logout", { method: "DELETE" }).then((res) => {
+            if (res.status === 201) {
+              props.setRefresh(true);
+            }
+          });
         }}
       >
         Logout

@@ -14,12 +14,16 @@ const currentUser = async () => {
 };
 export default function App() {
   const [user, setUser] = useState(null);
+  const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
-    currentUser().then((user) => {
-      setUser(user);
-    });
-  }, []);
+    if (refresh) {
+      currentUser().then((user) => {
+        setUser(user);
+        setRefresh(false);
+      });
+    }
+  }, [refresh]);
 
   return (
     <Router>
@@ -30,7 +34,7 @@ export default function App() {
               <Profile />
             </Route>
             <Route path="/">
-              <Login />
+              <Login setRefresh={setRefresh} />
             </Route>
           </Switch>
         </UserContext.Provider>
