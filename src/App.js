@@ -7,8 +7,8 @@ import Profile from "./Profile";
 
 const currentUser = async () => {
   const user = await fetch("/users/current", {}).then(async (res) => {
-    const j = await res.json();
-    return j;
+    const userJson = await res.json();
+    return userJson;
   });
   return user;
 };
@@ -26,7 +26,7 @@ export default function App() {
       <div className="App">
         <UserContext.Provider value={user}>
           <Switch>
-            <Route path="/paid_for_content">
+            <Route path="/profile">
               <Profile />
             </Route>
             <Route path="/">

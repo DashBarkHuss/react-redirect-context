@@ -30,7 +30,7 @@ export default function Login() {
       >
         Logout
       </button>
-      {next && <Redirect to="/paid_for_content" />}
+      {next && <Redirect to="/profile" />}
     </div>
   );
 }
