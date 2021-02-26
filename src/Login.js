@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { UserContext } from "./contexts/UserContext";
 
-export default function PayForAccess() {
+export default function Login() {
   const [next, setNext] = useState(false);
 
   const currentUser = useContext(UserContext);
@@ -16,12 +16,19 @@ export default function PayForAccess() {
       <br></br>
       <button
         onClick={() => {
-          fetch("/pay", { method: "POST" }).then((res) => {
+          fetch("/login", { method: "POST" }).then((res) => {
             if (res.status === 201) setNext(true);
           });
         }}
       >
-        Pay For Access
+        Login
+      </button>
+      <button
+        onClick={() => {
+          fetch("/logout", { method: "DELETE" });
+        }}
+      >
+        Logout
       </button>
       {next && <Redirect to="/paid_for_content" />}
     </div>

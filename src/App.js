@@ -1,12 +1,12 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { UserContext } from './contexts/UserContext';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import React, { useEffect, useContext, useState } from "react";
+import { UserContext } from "./contexts/UserContext";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import PayForAccess from './PayForAccess';
-import PaidContent from './PaidContent';
+import Login from "./Login";
+import Profile from "./Profile";
 
 const currentUser = async () => {
-  const user = await fetch('/users/current', {}).then(async (res) => {
+  const user = await fetch("/users/current", {}).then(async (res) => {
     const j = await res.json();
     return j;
   });
@@ -25,23 +25,12 @@ export default function App() {
     <Router>
       <div className="App">
         <UserContext.Provider value={user}>
-          <div>
-            <button
-              onClick={() => {
-                fetch('/login', {
-                  method: 'POST',
-                });
-              }}
-            >
-              login
-            </button>
-          </div>
           <Switch>
             <Route path="/paid_for_content">
-              <PaidContent />
+              <Profile />
             </Route>
             <Route path="/">
-              <PayForAccess />
+              <Login />
             </Route>
           </Switch>
         </UserContext.Provider>

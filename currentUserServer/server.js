@@ -4,12 +4,9 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
-// const authenticateUser = require('./seed/authenticateUser');
 const auth = require("./auth");
 
 const app = express();
-
-// without body parser passport won't be able to understand the json body in the user/login POST request
 
 app.use(
   session({
@@ -23,34 +20,10 @@ app.use(
 app.use(auth.initialize);
 app.use(auth.session);
 app.use((req, res, next) => {
-  req.session.p = "p";
+  req.session.count = req.session.count ? req.session.count + 1 : 0;
   console.log("ID", req.sessionID);
   next();
 });
-
-// app.use(function (req, res, next) {
-//   // Website you wish to allow to connect
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:8888");
-
-//   // Request methods you wish to allow
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-//   );
-
-//   // Request headers you wish to allow
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "X-Requested-With,content-type"
-//   );
-
-//   // Set to true if you need the website to include cookies in the requests sent
-//   // to the API (e.g. in case you use sessions)
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-
-//   // Pass to next layer of middleware
-//   next();
-// });
 
 // fake database
 const users = [
@@ -60,14 +33,6 @@ const users = [
     password: "5hlomoI5H0T",
     paymentProcessed: false,
   },
-
-  // fake change in database
-  {
-    id: "124",
-    username: "Dashie",
-    password: "5hlomoI5H0T",
-    paymentProcessed: true,
-  },
 ];
 
 app.post("/login", (req, res, next) => {
@@ -76,23 +41,15 @@ app.post("/login", (req, res, next) => {
     if (err) {
       return next(err);
     }
-    console.log(req.session);
     console.log(`user logged in`);
-    return res.status(200).send("Logged In");
-  });
-});
-app.post("/pay", async (req, res, next) => {
-  // 'Zinc' added to purchases.
-  // Because we have no database in this example, we mock this by changing the req.user to users[1]
-  await req.logout();
-  req.session.user = null;
-  req.login(users[1], function (err) {
-    if (err) {
-      return next(err);
-    }
-    console.log(`payment succeeded`, req.user);
     return res.status(201).send();
   });
+});
+app.delete("/logout", async (req, res, next) => {
+  await req.logout();
+  req.session.user = null;
+
+  return res.status(201).send();
 });
 
 app.get("/users/current", (req, res, next) => {
@@ -103,9 +60,6 @@ app.get("/users/current", (req, res, next) => {
   }
   console.log(user || { message: "not logged in" });
   res.status(200).send(user || { message: "not logged in" });
-});
-app.get("/f", (req, res, next) => {
-  res.status(200).send("popopop");
 });
 
 (async () =>
