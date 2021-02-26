@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useContext, useState } from 'react';
+import { UserContext } from './contexts/UserContext';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-function App() {
+import PayForAccess from './PayForAccess';
+import PaidContent from './PaidContent';
+
+const currentUser = async () => {
+  const user = await fetch('/users/current', {}).then(async (res) => {
+    const j = await res.json();
+    return j;
+  });
+  return user;
+};
+export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    currentUser().then((user) => {
+      setUser(user);
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <UserContext.Provider value={user}>
+          <div>
+            <button
+              onClick={() => {
+                fetch('/login', {
+                  method: 'POST',
+                });
+              }}
+            >
+              login
+            </button>
+          </div>
+          <Switch>
+            <Route path="/paid_for_content">
+              <PaidContent />
+            </Route>
+            <Route path="/">
+              <PayForAccess />
+            </Route>
+          </Switch>
+        </UserContext.Provider>
+      </div>
+    </Router>
   );
 }
-
-export default App;
