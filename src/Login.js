@@ -5,21 +5,19 @@ import { UserContext } from "./contexts/UserContext";
 export default function Login(props) {
   const [next, setNext] = useState(false);
 
-  const currentUser = useContext(UserContext);
+  const { user, setUser, getUser } = useContext(UserContext);
 
   return (
     <div>
       Logged In:{" "}
-      {!currentUser || currentUser.message === "not logged in"
-        ? "No One"
-        : currentUser.username}{" "}
+      {!user || user.message === "not logged in" ? "No One" : user.username}{" "}
       <br></br>
       <button
         onClick={() => {
-          fetch("/login", { method: "POST" }).then((res) => {
+          fetch("/login", { method: "POST" }).then(async (res) => {
             if (res.status === 201) {
+              setUser(await getUser());
               setNext(true);
-              props.setRefresh(true);
             }
           });
         }}
@@ -28,9 +26,9 @@ export default function Login(props) {
       </button>
       <button
         onClick={() => {
-          fetch("/logout", { method: "DELETE" }).then((res) => {
+          fetch("/logout", { method: "DELETE" }).then(async (res) => {
             if (res.status === 201) {
-              props.setRefresh(true);
+              setUser(await getUser());
             }
           });
         }}

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserContext } from "./contexts/UserContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -14,27 +14,31 @@ const currentUser = async () => {
 };
 export default function App() {
   const [user, setUser] = useState(null);
-  const [refresh, setRefresh] = useState(true);
+  const getUser = async () => {
+    const user = await fetch("/users/current", {}).then(async (res) => {
+      const userJson = await res.json();
+      return userJson;
+    });
+    return user;
+  };
+  const value = { user, setUser, getUser };
 
   useEffect(() => {
-    if (refresh) {
-      currentUser().then((user) => {
-        setUser(user);
-        setRefresh(false);
-      });
-    }
-  }, [refresh]);
+    currentUser().then((user) => {
+      setUser(user);
+    });
+  }, []);
 
   return (
     <Router>
       <div className="App">
-        <UserContext.Provider value={user}>
+        <UserContext.Provider value={value}>
           <Switch>
             <Route path="/profile">
               <Profile />
             </Route>
             <Route path="/">
-              <Login setRefresh={setRefresh} />
+              <Login />
             </Route>
           </Switch>
         </UserContext.Provider>
